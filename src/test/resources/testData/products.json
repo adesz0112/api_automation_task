@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Laptop",
+    "price": 123.45,
+    "category": "electronics"
+  },
+  {
+    "name": "Phone",
+    "price": 799.99,
+    "category": "mobile"
+  }
+]

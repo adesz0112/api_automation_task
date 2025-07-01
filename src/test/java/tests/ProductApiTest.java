@@ -5,6 +5,8 @@ import io.restassured.response.Response;
 import model.Product;
 import org.junit.jupiter.api.Test;
 import utils.ProductApiHelper;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,45 +17,50 @@ import static org.assertj.core.api.AssertionsForClassTypes.within;
 public class ProductApiTest extends BaseTest {
 
     ProductApiHelper helper = new ProductApiHelper();
+    private final String PATH =  "testData/products.json";
 
     @Test
-    public void testCreateProduct__schemaValidation() {
-        String name = "Laptop";
-        double price = 123.45;
-        String category = "electronics";
-        Product createdProduct = helper.createProduct(name, price, category);
+    public void testCreateProduct__schemaValidation() throws IOException {
+        List<Map<String, Object>> products = helper.loadProductsFromJson(PATH);
 
-        Product fetchedProduct = helper.fetchProductAndValidateSchema(createdProduct.getId());
+        for (Map<String, Object> p : products) {
+            String name = (String) p.get("name");
+            double price = ((Number) p.get("price")).doubleValue();
+            String category = (String) p.get("category");
 
-        assertThat(fetchedProduct.getId()).isEqualTo(createdProduct.getId());
-        assertThat(fetchedProduct.getName()).isEqualTo(name);
-        assertThat(fetchedProduct.getData().get("price")).isEqualTo(price);
-        assertThat(fetchedProduct.getData().get("category")).isEqualTo(category);
+            Product createdProduct = helper.createProduct(name, price, category);
+            Product fetchedProduct = helper.fetchProductAndValidateSchema(createdProduct.getId());
+
+            assertThat(fetchedProduct.getId()).isEqualTo(createdProduct.getId());
+            assertThat(fetchedProduct.getName()).isEqualTo(name);
+            assertThat(fetchedProduct.getData().get("price")).isEqualTo(price);
+            assertThat(fetchedProduct.getData().get("category")).isEqualTo(category);
+        }
     }
 
 
     @Test
-    public void testGetProductById___shouldReturnCorrectProduct() {
-        // Arrange: Létrehozunk egy terméket a helper metódussal
-        String name = "Test Laptop";
-        double price = 1499.99;
-        String category = "electronics";
+    public void testGetProductById___shouldReturnCorrectProduct() throws IOException {
+        List<Map<String, Object>> products = helper.loadProductsFromJson(PATH);
 
-        Product createdProduct = helper.createProduct(name, price, category);
+        for (Map<String, Object> p : products) {
+            String name = (String) p.get("name");
+            double price = ((Number) p.get("price")).doubleValue();
+            String category = (String) p.get("category");
 
-        // Act: Lekérjük az ID alapján, és validáljuk a séma alapján
-        Product fetchedProduct = helper.fetchProductAndValidateSchema(createdProduct.getId());
-        // Assert: Tartalmi validáció
-        assertThat(fetchedProduct.getId()).isEqualTo(createdProduct.getId());
-        assertThat(fetchedProduct.getName()).isEqualTo(name);
-        assertThat((Double) fetchedProduct.getData().get("price"))
-                .isCloseTo(price, within(0.01));
-        assertThat(fetchedProduct.getData().get("category")).isEqualTo(category);
+            Product createdProduct = helper.createProduct(name, price, category);
+            Product fetchedProduct = helper.fetchProductAndValidateSchema(createdProduct.getId());
+
+            assertThat(fetchedProduct.getId()).isEqualTo(createdProduct.getId());
+            assertThat(fetchedProduct.getName()).isEqualTo(name);
+            assertThat((Double) fetchedProduct.getData().get("price"))
+                    .isCloseTo(price, within(0.01));
+            assertThat(fetchedProduct.getData().get("category")).isEqualTo(category);
+        }
     }
 
     @Test
     public void testUpdateProduct__shouldUpdateTitleAndPrice() {
-        // 1. Először létrehozunk egy terméket
         Product createdProduct = helper.createProduct("Old Laptop", 1200.00, "electronics");
 
         // 2. Készítünk egy update map-et a name és price módosításához

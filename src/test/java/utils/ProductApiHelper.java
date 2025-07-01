@@ -1,8 +1,12 @@
 package utils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import model.Product;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,5 +111,16 @@ public class ProductApiHelper {
 
         return update;
     }
+
+
+    public List<Map<String, Object>> loadProductsFromJson(String resourcePath) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath);
+        if (is == null) {
+            throw new IOException("Resource not found: " + resourcePath);
+        }
+        return mapper.readValue(is, new TypeReference<List<Map<String, Object>>>(){});
+    }
+
 
 }
