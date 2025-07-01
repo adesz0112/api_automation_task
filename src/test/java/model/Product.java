@@ -7,15 +7,13 @@ import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Product {
-    private String id;             // Assigned by server after POST
-    private String name;           // Required
-    private Map<String, Object> data; // Flexible key-value structure
+    private String id;
+    private String name;
+    private Map<String, Object> data;
 
+    public Product() {
+    }
 
-    // No-arg constructor (required by Jackson)
-    public Product() {}
-
-    // All-args constructor for convenience
     public Product(String name, Map<String, Object> data) {
         this.name = name;
         this.data = data;
@@ -27,9 +25,6 @@ public class Product {
         this.data.put("price", price);
         this.data.put("category", category);
     }
-
-    // Getters & Setters
-
 
     public String getId() {
         return id;

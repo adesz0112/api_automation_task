@@ -17,11 +17,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.within;
 public class ProductApiTest extends BaseTest {
 
     ProductApiHelper helper = new ProductApiHelper();
-    private final String PATH =  "testData/products.json";
+    private final String path = "testData/products.json";
 
     @Test
     public void testCreateProduct__schemaValidation() throws IOException {
-        List<Map<String, Object>> products = helper.loadProductsFromJson(PATH);
+        List<Map<String, Object>> products = helper.loadProductsFromJson(path);
 
         for (Map<String, Object> p : products) {
             String name = (String) p.get("name");
@@ -41,7 +41,7 @@ public class ProductApiTest extends BaseTest {
 
     @Test
     public void testGetProductById___shouldReturnCorrectProduct() throws IOException {
-        List<Map<String, Object>> products = helper.loadProductsFromJson(PATH);
+        List<Map<String, Object>> products = helper.loadProductsFromJson(path);
 
         for (Map<String, Object> p : products) {
             String name = (String) p.get("name");
@@ -61,7 +61,7 @@ public class ProductApiTest extends BaseTest {
 
     @Test
     public void testUpdateProduct__shouldUpdateTitleAndPrice() throws IOException {
-        List<Map<String, Object>> productsFromFile = helper.loadProductsFromJson(PATH);
+        List<Map<String, Object>> productsFromFile = helper.loadProductsFromJson(path);
 
         Map<String, Object> originalProductData = productsFromFile.get(0);
         Product createdProduct = helper.createProduct(
@@ -86,7 +86,7 @@ public class ProductApiTest extends BaseTest {
 
     @Test
     public void testDeleteProduct_shouldDeleteSuccessfully() throws IOException {
-        List<Map<String, Object>> productsFromFile = helper.loadProductsFromJson(PATH);
+        List<Map<String, Object>> productsFromFile = helper.loadProductsFromJson(path);
 
         Map<String, Object> originalProductData = productsFromFile.get(0);
         Product createdProduct = helper.createProduct(
@@ -107,7 +107,7 @@ public class ProductApiTest extends BaseTest {
         List<Product> productsBefore = helper.getAllProducts();
         int sizeBefore = productsBefore.size();
 
-        List<Map<String, Object>> productsFromFile = helper.loadProductsFromJson(PATH);
+        List<Map<String, Object>> productsFromFile = helper.loadProductsFromJson(path);
 
         Map<String, Object> originalProductData = productsFromFile.get(0);
         Product createdProduct = helper.createProduct(
@@ -116,21 +116,14 @@ public class ProductApiTest extends BaseTest {
                 (String) originalProductData.get("category"));
 
         List<Product> productsAfter = helper.getAllProducts();
-
-        // 4. Lekérjük külön az új objektumot ID alapján
         Product fetchedProduct = helper.fetchProductAndValidateSchema(createdProduct.getId());
-
-        // 5. Manuálisan hozzáadjuk az új terméket a listához
         List<Product> extendedList = new ArrayList<>(productsAfter);
         extendedList.add(fetchedProduct);
 
-        // 6. Ellenőrzések
-        assertThat(extendedList.size()).isEqualTo(sizeBefore + 1); // Méret ellenőrzés
+        assertThat(extendedList.size()).isEqualTo(sizeBefore + 1);
         boolean containsCreated = extendedList.stream()
                 .anyMatch(p -> p.getId().equals(createdProduct.getId()));
-        assertThat(containsCreated).isTrue();                        // Tartalom ellenőrzés
-
-        // Opcionális: fetchedProduct adatok ellenőrzése
+        assertThat(containsCreated).isTrue();
         assertThat(fetchedProduct.getName()).isEqualTo(originalProductData.get("name"));
         assertThat(fetchedProduct.getData().get("price")).isEqualTo(originalProductData.get("price"));
         assertThat(fetchedProduct.getData().get("category")).isEqualTo(originalProductData.get("category"));

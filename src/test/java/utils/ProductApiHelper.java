@@ -17,16 +17,17 @@ import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInC
 
 public class ProductApiHelper {
 
+    private final String path = "schemas/product-schema.json";
+
     public Product fetchProductAndValidateSchema(String productId) {
         return given()
                 .spec(requestSpec)
                 .when()
                 .get("/objects/" + productId)
                 .then()
-                .log().body()
                 .spec(responseSpec)
                 .assertThat()
-                .body(matchesJsonSchemaInClasspath("schemas/product-schema.json"))
+                .body(matchesJsonSchemaInClasspath(path))
                 .extract()
                 .as(Product.class);
     }
@@ -44,13 +45,11 @@ public class ProductApiHelper {
                 .spec(requestSpec)
                 .body(productMap)
                 .when()
-                .post("/objects")  // vagy az API endpointja, ahol létrehozod
+                .post("/objects")
                 .then()
                 .spec(responseSpec)
                 .extract()
                 .as(Product.class);
-
-
     }
 
     public Product updateProduct(String productId, Map<String, Object> updates) {
@@ -62,11 +61,10 @@ public class ProductApiHelper {
                 .then()
                 .spec(responseSpec)
                 .assertThat()
-                .body(matchesJsonSchemaInClasspath("schemas/product-schema.json"))
+                .body(matchesJsonSchemaInClasspath(path))
                 .extract()
                 .as(Product.class);
     }
-
 
     public Response deleteProductById(String productId) {
         return given()
@@ -74,7 +72,7 @@ public class ProductApiHelper {
                 .when()
                 .delete("/objects/" + productId)
                 .then()
-                .spec(responseSpec) // 200, JSON, response time
+                .spec(responseSpec)
                 .extract()
                 .response();
     }
@@ -85,7 +83,7 @@ public class ProductApiHelper {
                 .when()
                 .get("/objects/" + productId)
                 .then()
-                .spec(responseSpec404); // pl. 404 + JSON + responseTime
+                .spec(responseSpec404);
     }
 
     public List<Product> getAllProducts() {
