@@ -25,3 +25,8 @@ The tests cover CRUD operations and schema validations to ensure the API behaves
     ```bash
    mvn clean test
 
+## ✅ Test Results
+A screenshot of the test results is included below for your reference:
+![Test Results Screenshot](api_results.png)
+
+

@@ -79,6 +79,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+                <configuration>
+                    <useFile>false</useFile> <!-- konzolra is írja az eredményt -->
+                </configuration>
             </plugin>
         </plugins>
     </build>
