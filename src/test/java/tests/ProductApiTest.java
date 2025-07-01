@@ -20,7 +20,7 @@ public class ProductApiTest extends BaseTest {
     private final String path = "testData/products.json";
 
     @Test
-    public void testCreateProduct__schemaValidation() throws IOException {
+    public void testCreateProduct() throws IOException {
         List<Map<String, Object>> products = helper.loadProductsFromJson(path);
 
         for (Map<String, Object> p : products) {
@@ -40,7 +40,7 @@ public class ProductApiTest extends BaseTest {
 
 
     @Test
-    public void testGetProductById___shouldReturnCorrectProduct() throws IOException {
+    public void testCreatedProductByIdReturnCorrectProduct() throws IOException {
         List<Map<String, Object>> products = helper.loadProductsFromJson(path);
 
         for (Map<String, Object> p : products) {
@@ -60,7 +60,7 @@ public class ProductApiTest extends BaseTest {
     }
 
     @Test
-    public void testUpdateProduct__shouldUpdateTitleAndPrice() throws IOException {
+    public void testUpdateProduct() throws IOException {
         List<Map<String, Object>> productsFromFile = helper.loadProductsFromJson(path);
 
         Map<String, Object> originalProductData = productsFromFile.get(0);
@@ -85,7 +85,7 @@ public class ProductApiTest extends BaseTest {
 
 
     @Test
-    public void testDeleteProduct_shouldDeleteSuccessfully() throws IOException {
+    public void testDeleteProduct() throws IOException {
         List<Map<String, Object>> productsFromFile = helper.loadProductsFromJson(path);
 
         Map<String, Object> originalProductData = productsFromFile.get(0);
@@ -103,7 +103,7 @@ public class ProductApiTest extends BaseTest {
     }
 
     @Test
-    public void testGetAllObjects_shouldContainNewObject() throws IOException {
+    public void testGetAllObjects() throws IOException {
         List<Product> productsBefore = helper.getAllProducts();
         int sizeBefore = productsBefore.size();
 

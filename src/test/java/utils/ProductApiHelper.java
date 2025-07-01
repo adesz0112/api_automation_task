@@ -110,7 +110,6 @@ public class ProductApiHelper {
         return update;
     }
 
-
     public List<Map<String, Object>> loadProductsFromJson(String resourcePath) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath);
