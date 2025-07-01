@@ -60,52 +60,61 @@ public class ProductApiTest extends BaseTest {
     }
 
     @Test
-    public void testUpdateProduct__shouldUpdateTitleAndPrice() {
-        Product createdProduct = helper.createProduct("Old Laptop", 1200.00, "electronics");
+    public void testUpdateProduct__shouldUpdateTitleAndPrice() throws IOException {
+        List<Map<String, Object>> productsFromFile = helper.loadProductsFromJson(PATH);
 
-        // 2. Készítünk egy update map-et a name és price módosításához
-        Map<String, Object> updates = helper.buildUpdatedProduct("New Laptop", 1399.99, "electronics");
-        // 3. Meghívjuk az update metódust
+        Map<String, Object> originalProductData = productsFromFile.get(0);
+        Product createdProduct = helper.createProduct(
+                (String) originalProductData.get("name"),
+                (Double) originalProductData.get("price"),
+                (String) originalProductData.get("category"));
+
+        Map<String, Object> updateData = productsFromFile.get(1);
+        Map<String, Object> updates = helper.buildUpdatedProduct(
+                (String) updateData.get("name"),
+                (Double) updateData.get("price"),
+                (String) updateData.get("category"));
+
         Product updatedProduct = helper.updateProduct(createdProduct.getId(), updates);
 
-        // 4. Ellenőrzések AssertJ-vel
-        assertThat(updatedProduct.getName()).isEqualTo("New Laptop");
-        assertThat(updatedProduct.getPrice()).isCloseTo(1399.99, within(0.01));
-
-        // 5. Régi értékeket ellenőrzés, hogy nem maradtak benne
-        assertThat(updatedProduct.getData().get("price")).isNotEqualTo(createdProduct.getData().get("price"));
-        assertThat(updatedProduct.getName()).isNotEqualTo(createdProduct.getName());
+        assertThat(updatedProduct.getName()).isEqualTo(updateData.get("name"));
+        assertThat(updatedProduct.getPrice()).isCloseTo((Double) updateData.get("price"), within(0.01));
+        assertThat(updatedProduct.getName()).isNotEqualTo(originalProductData.get("name"));
+        assertThat(updatedProduct.getData().get("price")).isNotEqualTo(originalProductData.get("price"));
     }
 
 
     @Test
-    public void testDeleteProduct_shouldDeleteSuccessfully() {
-        // 1. Létrehozunk egy terméket
-        Product createdProduct = helper.createProduct("Product to delete", 50.0, "test-category");
+    public void testDeleteProduct_shouldDeleteSuccessfully() throws IOException {
+        List<Map<String, Object>> productsFromFile = helper.loadProductsFromJson(PATH);
+
+        Map<String, Object> originalProductData = productsFromFile.get(0);
+        Product createdProduct = helper.createProduct(
+                (String) originalProductData.get("name"),
+                (Double) originalProductData.get("price"),
+                (String) originalProductData.get("category"));
 
         String expectedMessage = "Object with id = " + createdProduct.getId() + " has been deleted.";
-
-        // 2. Törlés
         Response deleteResponse = helper.deleteProductById(createdProduct.getId());
 
         String actualMessage = deleteResponse.path("message");
         assertThat(actualMessage).isEqualTo(expectedMessage);
-
-        // 3. Lekérjük újra - várjuk, hogy 404 legyen
         helper.assertProductNotFoundById(createdProduct.getId());
     }
 
     @Test
-    public void testGetAllObjects_shouldContainNewObject() {
-        // 1. Lekérjük az összes objektumot a létrehozás előtt
+    public void testGetAllObjects_shouldContainNewObject() throws IOException {
         List<Product> productsBefore = helper.getAllProducts();
-
         int sizeBefore = productsBefore.size();
 
-        // 2. Létrehozunk egy új objektumot
-        Product createdProduct = helper.createProduct("Test Product", 123.45, "test-category");
+        List<Map<String, Object>> productsFromFile = helper.loadProductsFromJson(PATH);
 
-        // 3. Lekérjük az összes objektumot a létrehozás után
+        Map<String, Object> originalProductData = productsFromFile.get(0);
+        Product createdProduct = helper.createProduct(
+                (String) originalProductData.get("name"),
+                (Double) originalProductData.get("price"),
+                (String) originalProductData.get("category"));
+
         List<Product> productsAfter = helper.getAllProducts();
 
         // 4. Lekérjük külön az új objektumot ID alapján
@@ -122,9 +131,10 @@ public class ProductApiTest extends BaseTest {
         assertThat(containsCreated).isTrue();                        // Tartalom ellenőrzés
 
         // Opcionális: fetchedProduct adatok ellenőrzése
-        assertThat(fetchedProduct.getName()).isEqualTo("Test Product");
-        assertThat(fetchedProduct.getData().get("price")).isEqualTo(123.45);
-        assertThat(fetchedProduct.getData().get("category")).isEqualTo("test-category");
+        assertThat(fetchedProduct.getName()).isEqualTo(originalProductData.get("name"));
+        assertThat(fetchedProduct.getData().get("price")).isEqualTo(originalProductData.get("price"));
+        assertThat(fetchedProduct.getData().get("category")).isEqualTo(originalProductData.get("category"));
+
     }
 
 }
